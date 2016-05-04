@@ -3,32 +3,65 @@
         <title>FancyFilter.js Example</title>
     </head>
     <body>
-        <input id="FancyFilterTextBox" value="john">
+        <input id="FancyFilterTextBox">
         <table id="FancyFilterTable">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Hometown</th>
+                    <th>State</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>John Smith</td>
-                    <td>New York</td>
+                    <td>Aaron Ellington</td>
+                    <td>OH</td>
                 </tr>
                 <tr>
-                    <td>Sandra Smith</td>
-                    <td>Seattle</td>
+                    <td>Nicole Ellington</td>
+                    <td>CT</td>
+                </tr>
+                <tr>
+                    <td>Michael Sweeney</td>
+                    <td>CT</td>
+                </tr>
+                <tr>
+                    <td>Brian Ruess</td>
+                    <td>CT</td>
+                </tr>
+                <tr>
+                    <td>Rachel Powers</td>
+                    <td>CT</td>
+                </tr>
+                <tr>
+                    <td>Hannah Schack</td>
+                    <td>CT</td>
+                </tr>
+                <tr>
+                    <td>Sherry Ellington</td>
+                    <td>OH</td>
                 </tr>
             </tbody>
         </table>
+        <ul id="FancyFilterUl">
+            <li>Aaron Ellington</li>
+            <li>Nicole Ellington</li>
+            <li>Michael Sweeney</li>
+            <li>Brian Ruess</li>
+            <li>Rachel Powers</li>
+            <li>Hannah Schack</li>
+            <li>Sherry Ellington</li>
+        </ul>
         <script src="FancyFilter.js"></script>
         <script>
             var obj = new FancyFilter();
             obj.inputName = 'FancyFilterTextBox';
-            obj.tableName = 'FancyFilterTable';
-            obj.update();
+            obj.subjectId = 'FancyFilterTable';
             obj.setInputEvent();
+
+            var obj2 = new FancyFilter();
+            obj2.inputName = 'FancyFilterTextBox';
+            obj2.subjectId = 'FancyFilterUl';
+            obj2.setInputEvent();
         </script>
     </body>
 </html>

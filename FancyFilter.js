@@ -5,7 +5,8 @@ var FancyFilter = function(data)
     var self = this;
 
     // Configuration
-    self.tableName;
+    self.subjectId;
+    self.subjectType = 'table';
     self.inputName;
     self.inputText;
     self.argumentDelimiter = ",";
@@ -15,53 +16,80 @@ var FancyFilter = function(data)
     // Return Value(s)
     self.resultCount = 0;
 
-    self.getRows = function(table)
+    self.getSubjects = function()
     {
-        var body = table.getElementsByTagName('tbody');
-        var rows = body[0].getElementsByTagName('tr');
-        return rows;
+        var subject = document.getElementById(self.subjectId);
+        self.subjectType = subject.tagName;
+
+        if (self.subjectType == 'TABLE') {
+
+            var body = subject.getElementsByTagName('tbody');
+            var subjects = body[0].getElementsByTagName('tr');
+
+        } else if(self.subjectType == 'UL') {
+            var subjects = subject.getElementsByTagName('li');
+        }
+
+        return subjects;
     }
 
-    self.getColumns = function(row)
+    self.formatSubject = function(subject)
     {
-        var columns = row.getElementsByTagName('td');
-        return columns;
+        var result = '';
+
+        if (self.subjectType == 'TABLE') {
+            var columns = subject.getElementsByTagName('td');
+            var columnInterval = 0
+            for(; columnInterval < columns.length ; columnInterval++) {
+                result += ' ' + columns[columnInterval].innerHTML;
+            }
+        } else if(self.subjectType == 'UL') {
+            var result = subject.innerHTML;
+        }
+
+        result = result.toLowerCase();
+
+        return result;
+    }
+
+    self.getMatchResult = function(needle, haystack)
+    {
+        var regexObject = new RegExp(needle, "g");
+        var regexResult = haystack.match(regexObject);
+        return regexResult;
     }
 
     self.update = function()
     {
         self.inputText = document.getElementById(self.inputName).value.toLowerCase();
-        //console.log("update: " + self.inputText);
 
-        var table = document.getElementById(self.tableName);
-        var rows = self.getRows(table);
 
-        var rowInterval = 0;
-        for(; rowInterval < rows.length ; rowInterval++) {
+        var subjects = self.getSubjects();
 
-            var fullRowText = '';
-            var columns = self.getColumns(rows[rowInterval]);
-            var columnInterval = 0
-            for(; columnInterval < columns.length ; columnInterval++) {
-                fullRowText += ' ' + columns[columnInterval].innerHTML;
+        var subjectInterval = 0;
+        for(; subjectInterval < subjects.length ; subjectInterval++) {
+            var subject = subjects[subjectInterval];
+            if (self.subjectType == 'TABLE') {
+
+            } else if(self.subjectType == 'UL') {
+                var fullSubjectText = subject.innerHTML.toLowerCase();
             }
 
-            fullRowText = fullRowText.toLowerCase();
+            var fullSubjectText = self.formatSubject(subject);
 
-            var regexObject = new RegExp(self.inputText, "g");
-            var regexResult = fullRowText.match(regexObject);
-            if (regexResult !== null) {
-                rows[rowInterval].style.display = "";
+            var matchResult = self.getMatchResult(self.inputText, fullSubjectText);
+
+
+            if (matchResult !== null) {
+                subject.style.display = "";
             } else {
-                rows[rowInterval].style.display = "none";
+                subject.style.display = "none";
             }
         }
     }
 
     self.setInputEvent = function()
     {
-        document.getElementById(self.inputName).oninput = function() {
-            self.update();
-        };
+        document.getElementById(self.inputName).addEventListener('input', self.update);
     }
 }
