@@ -4,6 +4,7 @@
     </head>
     <body>
         <input id="FancyFilterTextBox">
+        <div id="FancyFilterTableResult">0</div>
         <table id="FancyFilterTable">
             <thead>
                 <tr>
@@ -42,6 +43,7 @@
                 </tr>
             </tbody>
         </table>
+        <div id="FancyFilterUlResult">0</div>
         <ul id="FancyFilterUl">
             <li>Aaron Ellington</li>
             <li>Nicole Ellington</li>
@@ -56,11 +58,15 @@
             var obj = new FancyFilter();
             obj.inputName = 'FancyFilterTextBox';
             obj.subjectId = 'FancyFilterTable';
+            obj.resultCountId = 'FancyFilterTableResult';
+            obj.update();
             obj.setInputEvent();
 
             var obj2 = new FancyFilter();
             obj2.inputName = 'FancyFilterTextBox';
             obj2.subjectId = 'FancyFilterUl';
+            obj2.resultCountId = 'FancyFilterUlResult';
+            obj2.update();
             obj2.setInputEvent();
         </script>
     </body>

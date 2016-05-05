@@ -6,16 +6,15 @@ var FancyFilter = function(data)
 
     // Configuration
     self.subjectId;
+    self.resultCountId;
     self.subjectType = 'table';
     self.inputName;
-    self.inputText;
+    self.argumentText;
     self.argumentDelimiter = ",";
     self.excludeDelimiter = "!";
     self.columnDelimiter = ":";
 
-    // Return Value(s)
-    self.resultCount = 0;
-
+    // Gets an array of all the subjects to filter
     self.getSubjects = function()
     {
         var subject = document.getElementById(self.subjectId);
@@ -33,6 +32,7 @@ var FancyFilter = function(data)
         return subjects;
     }
 
+    // converts the subject to a single string
     self.formatSubject = function(subject)
     {
         var result = '';
@@ -47,47 +47,80 @@ var FancyFilter = function(data)
             var result = subject.innerHTML;
         }
 
-        result = result.toLowerCase();
+        result = result.toLowerCase().trim();
 
         return result;
     }
 
-    self.getMatchResult = function(needle, haystack)
+    // Returns true or false if the subject should be hidden or not
+    self.getMatchResult = function(arguments, haystack)
     {
-        var regexObject = new RegExp(needle, "g");
-        var regexResult = haystack.match(regexObject);
-        return regexResult;
+        var result = false;
+
+        var argumentInterval = 0;
+        for (; argumentInterval < arguments.length ; argumentInterval++) {
+            var argument = arguments[argumentInterval].trim();
+
+            var regexObject = new RegExp(argument, "g");
+            var regexResult = haystack.match(regexObject);
+
+            if (regexResult == null) {
+                result = false;
+                break;
+            } else {
+                result = true;
+            }
+        }
+
+        return result;
     }
 
+    // Gets the array of arguments to use in the filter process
+    self.getArguments = function()
+    {
+        if (self.argumentText === undefined) {
+            var fullArgumentText = document.getElementById(self.inputName).value;
+        } else {
+            var fullArgumentText = self.argumentText;
+        }
+
+        var arguments = fullArgumentText.toLowerCase().trim().split(self.argumentDelimiter);
+
+        return arguments;
+    }
+
+    // Preforms an update on the subject using the arguemntText
     self.update = function()
     {
-        self.inputText = document.getElementById(self.inputName).value.toLowerCase();
+        var resultCount = 0;
 
+        var arguments = self.getArguments();
 
         var subjects = self.getSubjects();
-
         var subjectInterval = 0;
         for(; subjectInterval < subjects.length ; subjectInterval++) {
             var subject = subjects[subjectInterval];
-            if (self.subjectType == 'TABLE') {
-
-            } else if(self.subjectType == 'UL') {
-                var fullSubjectText = subject.innerHTML.toLowerCase();
-            }
-
             var fullSubjectText = self.formatSubject(subject);
 
-            var matchResult = self.getMatchResult(self.inputText, fullSubjectText);
-
-
-            if (matchResult !== null) {
+            var matchResult = self.getMatchResult(arguments, fullSubjectText);
+            if (matchResult) {
                 subject.style.display = "";
+                resultCount++;
             } else {
                 subject.style.display = "none";
             }
         }
+        self.updateResultCount(resultCount);
     }
 
+    self.updateResultCount = function(resultCount)
+    {
+        if (self.resultCountId !== undefined) {
+            document.getElementById(self.resultCountId).innerHTML = resultCount;
+        }
+    }
+
+    // Appends an on input event on the for the input text box
     self.setInputEvent = function()
     {
         document.getElementById(self.inputName).addEventListener('input', self.update);
