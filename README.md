@@ -1,2 +1,2 @@
 # FancyFilter.js
-A super simple way to filter rows in a table.
+A super simple way to filter items in on a web page.
