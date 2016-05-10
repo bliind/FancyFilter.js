@@ -20,12 +20,10 @@ var FancyFilter = function(data)
         var subject = document.getElementById(self.subjectId);
         self.subjectType = subject.tagName;
 
-        if (self.subjectType == 'TABLE') {
-
+        if (self.subjectType === 'TABLE') {
             var body = subject.getElementsByTagName('tbody');
             var subjects = body[0].getElementsByTagName('tr');
-
-        } else if(self.subjectType == 'UL') {
+        } else if(self.subjectType === 'UL') {
             var subjects = subject.getElementsByTagName('li');
         }
 
@@ -113,6 +111,7 @@ var FancyFilter = function(data)
         self.updateResultCount(resultCount);
     }
 
+    // Writes the count to the resultCountId element
     self.updateResultCount = function(resultCount)
     {
         if (self.resultCountId !== undefined) {
