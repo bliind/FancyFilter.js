@@ -7,6 +7,7 @@ var FancyFilter = function(data)
     // Configuration
     self.subjectId;
     self.resultCountId;
+    self.resultCount;
     self.subjectType = 'table';
     self.inputName;
     self.argumentText;
@@ -35,14 +36,14 @@ var FancyFilter = function(data)
     {
         var result = '';
 
-        if (self.subjectType == 'TABLE') {
+        if (self.subjectType === 'TABLE') {
             var columns = subject.getElementsByTagName('td');
             var columnInterval = 0
             for(; columnInterval < columns.length ; columnInterval++) {
-                result += ' ' + columns[columnInterval].innerHTML;
+                result += ' ' + columns[columnInterval].textContent;
             }
-        } else if(self.subjectType == 'UL') {
-            var result = subject.innerHTML;
+        } else if(self.subjectType === 'UL') {
+            var result = subject.textContent;
         }
 
         result = result.toLowerCase().trim();
@@ -51,8 +52,14 @@ var FancyFilter = function(data)
     }
 
     // Returns true or false if the subject should be hidden or not
-    self.getMatchResult = function(arguments, haystack)
+    self.getMatchResult = function(arguments, subject)
     {
+        var fullSubjectText = self.formatSubject(subject, false);
+
+        // if (self.subjectType === 'TABLE') {
+        //
+        // }
+
         var result = false;
 
         var argumentInterval = 0;
@@ -60,7 +67,7 @@ var FancyFilter = function(data)
             var argument = arguments[argumentInterval].trim();
 
             var regexObject = new RegExp(argument, "g");
-            var regexResult = haystack.match(regexObject);
+            var regexResult = fullSubjectText.match(regexObject);
 
             if (regexResult == null) {
                 result = false;
@@ -90,7 +97,7 @@ var FancyFilter = function(data)
     // Preforms an update on the subject using the arguemntText
     self.update = function()
     {
-        var resultCount = 0;
+        self.resultCount = 0;
 
         var arguments = self.getArguments();
 
@@ -98,24 +105,23 @@ var FancyFilter = function(data)
         var subjectInterval = 0;
         for(; subjectInterval < subjects.length ; subjectInterval++) {
             var subject = subjects[subjectInterval];
-            var fullSubjectText = self.formatSubject(subject);
 
-            var matchResult = self.getMatchResult(arguments, fullSubjectText);
+            var matchResult = self.getMatchResult(arguments, subject);
             if (matchResult) {
                 subject.style.display = "";
-                resultCount++;
+                self.resultCount++;
             } else {
                 subject.style.display = "none";
             }
         }
-        self.updateResultCount(resultCount);
+        self.updateResultCount();
     }
 
     // Writes the count to the resultCountId element
-    self.updateResultCount = function(resultCount)
+    self.updateResultCount = function()
     {
         if (self.resultCountId !== undefined) {
-            document.getElementById(self.resultCountId).innerHTML = resultCount;
+            document.getElementById(self.resultCountId).innerHTML = self.resultCount;
         }
     }
 
