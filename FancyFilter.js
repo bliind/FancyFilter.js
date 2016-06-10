@@ -28,7 +28,7 @@ var FancyFilter = function(data)
     self.inputArray;
     self.columnHeaderArray = [];
 
-    // Preforms the actual filter logic
+    // Performs the actual filter logic
     self.filter = function(inputValue)
     {
         // TODO: add easy way to force a refresh of subjectElementArray
@@ -42,8 +42,7 @@ var FancyFilter = function(data)
         self.inputArray = self.inputContent.toLowerCase().split(self.inputDelimiter);
 
         self.resultCount = 0;
-        var subjectInterval = 0;
-        for (; subjectInterval < self.subjectElementArray.length ; subjectInterval++) {
+        for (subjectInterval = 0; subjectInterval < self.subjectElementArray.length ; subjectInterval++) {
             var subjectElement = self.subjectElementArray[subjectInterval];
             var filterResult = self.testElement(subjectElement);
 
@@ -91,8 +90,7 @@ var FancyFilter = function(data)
         var result = false;
 
         // Loops over all items in the input array
-        var inputInterval = 0;
-        for (; inputInterval < self.inputArray.length ; inputInterval++) {
+        for (inputInterval = 0; inputInterval < self.inputArray.length ; inputInterval++) {
             // formats the input value
             var input = self.inputArray[inputInterval].trim();
 
@@ -146,8 +144,7 @@ var FancyFilter = function(data)
 
         // create an array of just the text from the columnHeaderSelector
         self.columnHeaderArray = [];
-        var headerInterval = 0;
-        for (; headerInterval < self.columnHeaderElementArray.length ; headerInterval++) {
+        for (headerInterval = 0; headerInterval < self.columnHeaderElementArray.length ; headerInterval++) {
             var columnText = self.columnHeaderElementArray[headerInterval].innerText.toLowerCase().trim();
             self.columnHeaderArray.push(columnText);
         }
