@@ -1,77 +1,127 @@
 
 var FancyFilter = function(data)
 {
-    // Cool way to avoid porblems of `this` being different it nested functions
+    // Added the contains method to the String
+    String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
+
+    // Cool way to avoid problems of `this` changing in anonymous functions
     var self = this;
 
-    // Configuration
-    self.subjectId;
-    self.resultCountId;
+    // User Configuration Options
+    self.subjectSelector;
+    self.subjectTableHeaderSelector;
+    self.resultCountSelector;
+    self.inputSelector;
+    self.inputDelimiter = ',';
+    self.inputExclude = '!',
+    self.inputColumnDelimiter = ':',
+    self.subjectExcludeClass = 'ffExclude',
+
+    // "Public" proporties
     self.resultCount;
-    self.subjectType = 'table';
-    self.inputName;
-    self.argumentText;
-    self.argumentDelimiter = ",";
-    self.excludeDelimiter = "!";
-    self.columnDelimiter = ":";
 
-    // Gets an array of all the subjects to filter
-    self.getSubjects = function()
+    // "Private" proporties
+    self.subjectArray;
+    self.subjectTableHeaderElements;
+    self.inputElement;
+    self.inputContent;
+    self.inputArray;
+
+    self.subjectColumnArray = [];
+
+    //
+    self.filter = function(inputValue)
     {
-        var subject = document.getElementById(self.subjectId);
-        self.subjectType = subject.tagName;
-
-        if (self.subjectType === 'TABLE') {
-            var body = subject.getElementsByTagName('tbody');
-            var subjects = body[0].getElementsByTagName('tr');
-        } else if(self.subjectType === 'UL') {
-            var subjects = subject.getElementsByTagName('li');
+        // TODO: add easy way to force a refresh of subjectArray
+        if (typeof self.subjectArray === 'undefined') {
+            self.setSubjectArray();
         }
 
-        return subjects;
-    }
+        // TODO: Add easy way to override inputContent via Javascript
+        self.inputContent = self.inputElement.value;
 
-    // converts the subject to a single string
-    self.formatSubject = function(subject)
-    {
-        var result = '';
+        self.inputArray = self.inputContent.toLowerCase().split(self.inputDelimiter);
 
-        if (self.subjectType === 'TABLE') {
-            var columns = subject.getElementsByTagName('td');
-            var columnInterval = 0
-            for(; columnInterval < columns.length ; columnInterval++) {
-                result += ' ' + columns[columnInterval].textContent;
+        self.resultCount = 0;
+        var subjectInterval = 0;
+        for (; subjectInterval < self.subjectArray.length ; subjectInterval++) {
+            var subjectElement = self.subjectArray[subjectInterval];
+            var filterResult = self.testElement(subjectElement);
+
+            if (filterResult) {
+                subjectElement.style.display = '';
+                self.resultCount++;
+            } else {
+                subjectElement.style.display = 'none';
             }
-        } else if(self.subjectType === 'UL') {
-            var result = subject.textContent;
         }
 
-        result = result.toLowerCase().trim();
-
-        return result;
+        if (typeof self.resultCountSelector !== 'undefined') {
+            document.querySelector(self.resultCountSelector).innerHTML = self.resultCount;
+        }
     }
 
-    // Returns true or false if the subject should be hidden or not
-    self.getMatchResult = function(arguments, subject)
+    // Creates the on input event on the text box
+    self.setInputEvent = function(inputSelector)
     {
-        var fullSubjectText = self.formatSubject(subject, false);
+        if (typeof inputSelector !== 'undefined') {
+            self.inputSelector = inputSelector;
+        }
 
-        // if (self.subjectType === 'TABLE') {
-        //
-        // }
+        self.inputElement = document.querySelector(self.inputSelector);
+        self.inputElement.addEventListener('input', self.filter);
+    }
+
+    self.setSubjectArray = function()
+    {
+        self.subjectArray = document.querySelectorAll(self.subjectSelector);
+    }
+
+    self.testElement = function(element)
+    {
+        var elementContent = element.innerText.toLowerCase().trim();
+        var containsExcudeClass = element.classList.contains(self.subjectExcludeClass);
+        if (containsExcudeClass === true) { return true; }
+
+        self.setSubjectColumnArray();
 
         var result = false;
 
-        var argumentInterval = 0;
-        for (; argumentInterval < arguments.length ; argumentInterval++) {
-            var argument = arguments[argumentInterval].trim();
+        var inputInterval = 0;
+        for (; inputInterval < self.inputArray.length ; inputInterval++) {
+            var excludeMode = false;
 
-            var regexObject = new RegExp(argument, "g");
-            var regexResult = fullSubjectText.match(regexObject);
+            var input = self.inputArray[inputInterval].trim();
 
-            if (regexResult == null) {
-                result = false;
-                break;
+            // Checks for use of the inputColumnDelimiter character
+            var inputContainsColumnDelimiter = input.contains(self.inputColumnDelimiter);
+            if (inputContainsColumnDelimiter) {
+                var inputColumnArray = input.split(self.inputColumnDelimiter);
+                var columnName = inputColumnArray[0].trim();
+                var matchingColumnIndex = self.subjectColumnArray.indexOf(columnName);
+                if (matchingColumnIndex !== -1) {
+                    input = inputColumnArray[1].trim();
+                    elementContent = element.querySelectorAll('td')[matchingColumnIndex].innerText.toLowerCase().trim();
+                }
+            }
+
+            // Checks for use of the inputExclude character
+            if (input.substring(0, 1) == self.inputExclude) {
+                excludeMode = true;
+                input = input.substring(1);
+            }
+
+            var elementContentContainsInput = elementContent.contains(input);
+            if (input != '') {
+                if (!elementContentContainsInput && !excludeMode) {
+                    result = false;
+                    break;
+                } else if (elementContentContainsInput && excludeMode) {
+                    result = false;
+                    break;
+                } else {
+                    result = true;
+                }
             } else {
                 result = true;
             }
@@ -80,54 +130,16 @@ var FancyFilter = function(data)
         return result;
     }
 
-    // Gets the array of arguments to use in the filter process
-    self.getArguments = function()
+    self.setSubjectColumnArray = function()
     {
-        if (self.argumentText === undefined) {
-            var fullArgumentText = document.getElementById(self.inputName).value;
-        } else {
-            var fullArgumentText = self.argumentText;
+        self.subjectColumnArray = [];
+        self.subjectTableHeaderElements = document.querySelectorAll(self.subjectTableHeaderSelector);
+        var headerInterval = 0;
+        for (; headerInterval < self.subjectTableHeaderElements.length ; headerInterval++) {
+            var columnText = self.subjectTableHeaderElements[headerInterval].innerText.toLowerCase().trim();
+            self.subjectColumnArray.push(columnText);
         }
-
-        var arguments = fullArgumentText.toLowerCase().trim().split(self.argumentDelimiter);
-
-        return arguments;
-    }
-
-    // Preforms an update on the subject using the arguemntText
-    self.update = function()
-    {
-        self.resultCount = 0;
-
-        var arguments = self.getArguments();
-
-        var subjects = self.getSubjects();
-        var subjectInterval = 0;
-        for(; subjectInterval < subjects.length ; subjectInterval++) {
-            var subject = subjects[subjectInterval];
-
-            var matchResult = self.getMatchResult(arguments, subject);
-            if (matchResult) {
-                subject.style.display = "";
-                self.resultCount++;
-            } else {
-                subject.style.display = "none";
-            }
-        }
-        self.updateResultCount();
-    }
-
-    // Writes the count to the resultCountId element
-    self.updateResultCount = function()
-    {
-        if (self.resultCountId !== undefined) {
-            document.getElementById(self.resultCountId).innerHTML = self.resultCount;
-        }
-    }
-
-    // Appends an on input event on the for the input text box
-    self.setInputEvent = function()
-    {
-        document.getElementById(self.inputName).addEventListener('input', self.update);
     }
 }
+
+var ff = FancyFilter;

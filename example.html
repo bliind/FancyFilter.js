@@ -25,7 +25,7 @@
                     <td>Michael Sweeney</td>
                     <td>CT</td>
                 </tr>
-                <tr>
+                <tr class="ffExclude">
                     <td>Brian Ruess</td>
                     <td>CT</td>
                 </tr>
@@ -49,29 +49,35 @@
         </table>
         <div id="FancyFilterUlResult">0</div>
         <ul id="FancyFilterUl">
-            <li>Aaron Ellington</li>
+            <li>Aaron<br> Ellington</li>
             <li>Nicole Ellington</li>
             <li>Michael Sweeney</li>
             <li>Brian Ruess</li>
-            <li>Rachel Powers</li>
+            <li class="ffExclude">Rachel Powers</li>
             <li>Hannah Schack</li>
             <li>Sherry Ellington</li>
         </ul>
         <script src="FancyFilter.js"></script>
         <script>
-            var obj = new FancyFilter();
-            obj.inputName = 'FancyFilterTextBox';
-            obj.subjectId = 'FancyFilterTable';
-            obj.resultCountId = 'FancyFilterTableResult';
-            obj.update();
-            obj.setInputEvent();
+            var obj1 = new FancyFilter();
+            obj1.setInputEvent('#FancyFilterTextBox');
+            obj1.subjectSelector = '#FancyFilterTable tbody tr';
+            obj1.subjectTableHeaderSelector = '#FancyFilterTable thead th';
+            obj1.resultCountSelector = '#FancyFilterTableResult';
+            obj1.filter();
 
-            var obj2 = new FancyFilter();
-            obj2.inputName = 'FancyFilterTextBox';
-            obj2.subjectId = 'FancyFilterUl';
-            obj2.resultCountId = 'FancyFilterUlResult';
-            obj2.update();
-            obj2.setInputEvent();
+            // var obj2 = new ff();
+            // obj2.setInputEvent('#FancyFilterTextBox');
+            // obj2.subjectSelector = '#FancyFilterUl li';
+            // obj2.resultCountSelector = '#FancyFilterUlResult';
+            // obj2.filter();
+
+            // var obj2 = new FancyFilter();
+            // obj2.inputName = 'FancyFilterTextBox';
+            // obj2.subjectId = 'FancyFilterUl';
+            // obj2.resultCountId = 'FancyFilterUlResult';
+            // obj2.update();
+            // obj2.setInputEvent();
         </script>
     </body>
 </html>
