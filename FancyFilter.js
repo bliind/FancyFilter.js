@@ -9,32 +9,31 @@ var FancyFilter = function(data)
 
     // User Configuration Options
     self.subjectSelector;
-    self.subjectTableHeaderSelector;
-    self.resultCountSelector;
+    self.columnHeaderSelector;
+    self.resultCountOutputSelector;
+    self.subjectExcludeClass = 'ffExclude',
     self.inputSelector;
     self.inputDelimiter = ',';
-    self.inputExclude = '!',
+    self.inputExcludeDelimiter = '!',
     self.inputColumnDelimiter = ':',
-    self.subjectExcludeClass = 'ffExclude',
 
     // "Public" proporties
     self.resultCount;
 
     // "Private" proporties
-    self.subjectArray;
-    self.subjectTableHeaderElements;
+    self.subjectElementArray;
+    self.columnHeaderElementArray;
     self.inputElement;
     self.inputContent;
     self.inputArray;
+    self.columnHeaderArray = [];
 
-    self.subjectColumnArray = [];
-
-    //
+    // Preforms the actual filter logic
     self.filter = function(inputValue)
     {
-        // TODO: add easy way to force a refresh of subjectArray
-        if (typeof self.subjectArray === 'undefined') {
-            self.setSubjectArray();
+        // TODO: add easy way to force a refresh of subjectElementArray
+        if (typeof self.subjectElementArray === 'undefined') {
+            self.setSubjectElementArray();
         }
 
         // TODO: Add easy way to override inputContent via Javascript
@@ -44,8 +43,8 @@ var FancyFilter = function(data)
 
         self.resultCount = 0;
         var subjectInterval = 0;
-        for (; subjectInterval < self.subjectArray.length ; subjectInterval++) {
-            var subjectElement = self.subjectArray[subjectInterval];
+        for (; subjectInterval < self.subjectElementArray.length ; subjectInterval++) {
+            var subjectElement = self.subjectElementArray[subjectInterval];
             var filterResult = self.testElement(subjectElement);
 
             if (filterResult) {
@@ -56,8 +55,8 @@ var FancyFilter = function(data)
             }
         }
 
-        if (typeof self.resultCountSelector !== 'undefined') {
-            document.querySelector(self.resultCountSelector).innerHTML = self.resultCount;
+        if (typeof self.resultCountOutputSelector !== 'undefined') {
+            document.querySelector(self.resultCountOutputSelector).innerHTML = self.resultCount;
         }
     }
 
@@ -72,25 +71,29 @@ var FancyFilter = function(data)
         self.inputElement.addEventListener('input', self.filter);
     }
 
-    self.setSubjectArray = function()
+    // Sets the array of subjects to filter
+    self.setSubjectElementArray = function()
     {
-        self.subjectArray = document.querySelectorAll(self.subjectSelector);
+        self.setColumnArray();
+        self.subjectElementArray = document.querySelectorAll(self.subjectSelector);
     }
 
+    // Acually tests the element if it matches any of the input arguments
     self.testElement = function(element)
     {
         var elementContent = element.innerText.toLowerCase().trim();
+
+        // Checks if the element has the subjectExcludeClass and if so just stop and return true
         var containsExcudeClass = element.classList.contains(self.subjectExcludeClass);
         if (containsExcudeClass === true) { return true; }
 
-        self.setSubjectColumnArray();
-
+        // Starts with result being false unless changed to true later
         var result = false;
 
+        // Loops over all items in the input array
         var inputInterval = 0;
         for (; inputInterval < self.inputArray.length ; inputInterval++) {
-            var excludeMode = false;
-
+            // formats the input value
             var input = self.inputArray[inputInterval].trim();
 
             // Checks for use of the inputColumnDelimiter character
@@ -98,19 +101,24 @@ var FancyFilter = function(data)
             if (inputContainsColumnDelimiter) {
                 var inputColumnArray = input.split(self.inputColumnDelimiter);
                 var columnName = inputColumnArray[0].trim();
-                var matchingColumnIndex = self.subjectColumnArray.indexOf(columnName);
+                var matchingColumnIndex = self.columnHeaderArray.indexOf(columnName);
+                // if the column name is valid  change the value of input and elementContent for the test
                 if (matchingColumnIndex !== -1) {
                     input = inputColumnArray[1].trim();
                     elementContent = element.querySelectorAll('td')[matchingColumnIndex].innerText.toLowerCase().trim();
                 }
             }
 
-            // Checks for use of the inputExclude character
-            if (input.substring(0, 1) == self.inputExclude) {
-                excludeMode = true;
+            // Checks for use of the inputExcludeDelimiter character
+            if (input.substring(0, 1) == self.inputExcludeDelimiter) {
+                var excludeMode = true;
                 input = input.substring(1);
+            } else {
+                var excludeMode = false;
             }
 
+
+            // tests to see if the input matches the elementContent
             var elementContentContainsInput = elementContent.contains(input);
             if (input != '') {
                 if (!elementContentContainsInput && !excludeMode) {
@@ -130,16 +138,18 @@ var FancyFilter = function(data)
         return result;
     }
 
-    self.setSubjectColumnArray = function()
+    // Sets the array of column headers if any are found
+    self.setColumnArray = function()
     {
-        self.subjectColumnArray = [];
-        self.subjectTableHeaderElements = document.querySelectorAll(self.subjectTableHeaderSelector);
+        // Reset the column array
+        self.columnHeaderElementArray = document.querySelectorAll(self.columnHeaderSelector);
+
+        // create an array of just the text from the columnHeaderSelector
+        self.columnHeaderArray = [];
         var headerInterval = 0;
-        for (; headerInterval < self.subjectTableHeaderElements.length ; headerInterval++) {
-            var columnText = self.subjectTableHeaderElements[headerInterval].innerText.toLowerCase().trim();
-            self.subjectColumnArray.push(columnText);
+        for (; headerInterval < self.columnHeaderElementArray.length ; headerInterval++) {
+            var columnText = self.columnHeaderElementArray[headerInterval].innerText.toLowerCase().trim();
+            self.columnHeaderArray.push(columnText);
         }
     }
 }
-
-var ff = FancyFilter;

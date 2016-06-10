@@ -3,81 +3,126 @@
         <title>FancyFilter.js Example</title>
     </head>
     <body>
-        <input id="FancyFilterTextBox">
-        <div id="FancyFilterTableResult">0</div>
-        <table id="FancyFilterTable">
+        <input id="ffInput">
+        <div id="peopleCount">0</div>
+        <table id="people">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>State</th>
+                    <th>Gender</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Aaron Ellington</td>
-                    <td>OH</td>
+                    <td>Daenerys Targaryen</td>
+                    <td>Female</td>
                 </tr>
                 <tr>
-                    <td>Nicole Ellington</td>
-                    <td>CT</td>
+                    <td>Joffrey Baratheon</td>
+                    <td>Male</td>
                 </tr>
                 <tr>
-                    <td>Michael Sweeney</td>
-                    <td>CT</td>
-                </tr>
-                <tr class="ffExclude">
-                    <td>Brian Ruess</td>
-                    <td>CT</td>
+                    <td>Tyrion Lannister</td>
+                    <td>Male</td>
                 </tr>
                 <tr>
-                    <td>Rachel Powers</td>
-                    <td>CT</td>
+                    <td>Sansa Stark</td>
+                    <td>Female</td>
                 </tr>
                 <tr>
-                    <td>Hannah Schack</td>
-                    <td>CT</td>
+                    <td>Eddard Stark</td>
+                    <td>Male</td>
                 </tr>
                 <tr>
-                    <td>Sherry Ellington</td>
-                    <td>OH</td>
+                    <td>Cersei Lannister</td>
+                    <td>Female</td>
                 </tr>
                 <tr>
-                    <td>OH</td>
-                    <td>??</td>
+                    <td>Arya Stark</td>
+                    <td>Female</td>
+                </tr>
+                <tr>
+                    <td>Tywin Lannister</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Brienne of Tarth</td>
+                    <td>Female</td>
+                </tr>
+                <tr>
+                    <td>Robert Baratheon</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Jaime Lannister</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Margaery Tyrell</td>
+                    <td>Female</td>
+                </tr>
+                <tr>
+                    <td>Khal Drogo</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Jon Snow</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Viserys Targaryen</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Jorah Mormont</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Davos Seaworth</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Petyr Baelish</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Renly Baratheon</td>
+                    <td>Male</td>
+                </tr>
+                <tr>
+                    <td>Olenna Tyrell</td>
+                    <td>Female</td>
                 </tr>
             </tbody>
         </table>
-        <div id="FancyFilterUlResult">0</div>
-        <ul id="FancyFilterUl">
-            <li>Aaron<br> Ellington</li>
-            <li>Nicole Ellington</li>
-            <li>Michael Sweeney</li>
-            <li>Brian Ruess</li>
-            <li class="ffExclude">Rachel Powers</li>
-            <li>Hannah Schack</li>
-            <li>Sherry Ellington</li>
+        <div id="housesCount">0</div>
+        <ul id="houses">
+            <li>House Baratheon</li>
+            <li>House Bolton</li>
+            <li>House Florent</li>
+            <li>House Lannister</li>
+            <li>House Martell</li>
+            <li>House Redwyne</li>
+            <li>House Stark</li>
+            <li>House Umber</li>
+            <li>House Targaryen</li>
+            <li>House Tully</li>
         </ul>
         <script src="FancyFilter.js"></script>
         <script>
-            var obj1 = new FancyFilter();
-            obj1.setInputEvent('#FancyFilterTextBox');
-            obj1.subjectSelector = '#FancyFilterTable tbody tr';
-            obj1.subjectTableHeaderSelector = '#FancyFilterTable thead th';
-            obj1.resultCountSelector = '#FancyFilterTableResult';
-            obj1.filter();
+            var ffPeople = new FancyFilter();
+            ffPeople.setInputEvent('#ffInput');
+            ffPeople.subjectSelector = '#people tbody tr';
+            ffPeople.columnHeaderSelector = '#people thead th';
+            ffPeople.resultCountOutputSelector = '#peopleCount';
+            ffPeople.filter();
 
-            // var obj2 = new ff();
-            // obj2.setInputEvent('#FancyFilterTextBox');
-            // obj2.subjectSelector = '#FancyFilterUl li';
-            // obj2.resultCountSelector = '#FancyFilterUlResult';
-            // obj2.filter();
+            var ffHouses = new FancyFilter();
+            ffHouses.setInputEvent('#ffInput');
+            ffHouses.subjectSelector = '#houses li';
+            ffHouses.resultCountOutputSelector = '#housesCount';
+            ffHouses.filter();
 
-            // var obj2 = new FancyFilter();
-            // obj2.inputName = 'FancyFilterTextBox';
-            // obj2.subjectId = 'FancyFilterUl';
-            // obj2.resultCountId = 'FancyFilterUlResult';
-            // obj2.update();
-            // obj2.setInputEvent();
         </script>
     </body>
 </html>
